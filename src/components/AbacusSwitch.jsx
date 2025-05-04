@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import styles from './abacusSwitch.module.css'
-import axios from 'axios';
 
 const AbacusSwitch = () => {
     const [expression, setExpression] = useState("")
