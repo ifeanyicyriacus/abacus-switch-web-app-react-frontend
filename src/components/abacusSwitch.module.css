@@ -78,3 +78,10 @@ button:hover {
 .clear:hover {
     background: #ff6961;
 }
+
+.backspace {
+    color: #ff3b30;
+}
+.backspace:hover {
+    background: #ff6961;
+}
