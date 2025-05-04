@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import styles from './abacusSwitch.module.css'
+import axios from 'axios';
 
 const AbacusSwitch = () => {
     const [expression, setExpression] = useState("")
@@ -11,11 +12,27 @@ const AbacusSwitch = () => {
             setDisplayExpression(() => newExpression)
             return newExpression
         });
-    }
+    };
 
-    function evaluationHandler() {
+    const postData = async () => {
+        try {
+            const response = await axios.post('http://localhost:5000/calculate',
+                {
+                    "expression" : expression
+                });
+
+            console.log('Success:', response.data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    async function evaluationHandler() {
+        await postData();
+
         if (expression !== "") {
-            const result = () => eval(expression);
+            const result = () => evaluate(expression);
+            console.log(result);
             setExpression(prevState => {
                 prevState = result();
                 setDisplayExpression(() => prevState)
@@ -32,7 +49,7 @@ const AbacusSwitch = () => {
     function backspaceHandler() {
         setExpression(prevState => {
             const newExpression = prevState.substring(0, prevState.length - 1);
-            if (newExpression.length === 0){
+            if (newExpression.length === 0) {
                 setDisplayExpression(() => "0")
                 return "";
             } else {
