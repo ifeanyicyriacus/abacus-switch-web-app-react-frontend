@@ -5,6 +5,7 @@ import axios from 'axios';
 const AbacusSwitch = () => {
     const [expression, setExpression] = useState("")
     const [displayExpression, setDisplayExpression] = useState('0')
+    const API_URL = 'http://localhost:5000/calculate';
 
     const appendSymbol = (e) => {
         setExpression((prevState) => {
@@ -14,21 +15,36 @@ const AbacusSwitch = () => {
         });
     };
 
-    const postData = async () => {
+    const evaluate = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/calculate',
-                {
-                    "expression" : expression
-                });
+            const response = await fetch(API_URL, {
+                method : 'POST',
+                headers : {
+                    'Content-Type' : 'application/json'
+                },
+                body : JSON.stringify({expression : expression}),
+            });
 
-            console.log('Success:', response.data);
+            // if (!response.ok) throw new Error('Something went wrong.');
+
+            const data = await response.json();
+            setExpression(() => {
+                console.log(data)
+                setDisplayExpression(() => {
+                    return data.result.toString()
+                });
+                return displayExpression;
+            });
         } catch (error) {
-            console.error('Error:', error);
+            setDisplayExpression(() => {
+                setExpression(() => "");
+                return error;
+            });
         }
-    };
+    }
 
     async function evaluationHandler() {
-        await postData();
+        // await postData();
 
         if (expression !== "") {
             const result = () => evaluate(expression);
