@@ -24,11 +24,10 @@ const AbacusSwitch = () => {
                 body : JSON.stringify({expression : expression}),
             });
 
-            // if (!response.ok) throw new Error('Something went wrong.');
+            if (!response.ok) throw new Error('Something went wrong.');
 
             const data = await response.json();
             setExpression(() => {
-                console.log(data)
                 setDisplayExpression(() => {
                     return data.result.toString()
                 });
@@ -43,17 +42,7 @@ const AbacusSwitch = () => {
     }
 
     async function evaluationHandler() {
-        // await postData();
-
-        if (expression !== "") {
-            const result = () => evaluate(expression);
-            console.log(result);
-            setExpression(prevState => {
-                prevState = result();
-                setDisplayExpression(() => prevState)
-                return prevState;
-            });
-        }
+        if (expression !== "") await evaluate(expression);
     }
 
     function clearScreenHandler() {
