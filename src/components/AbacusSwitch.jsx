@@ -4,7 +4,9 @@ import styles from './abacusSwitch.module.css'
 const AbacusSwitch = () => {
     const [expression, setExpression] = useState("")
     const [displayExpression, setDisplayExpression] = useState('0')
-    const API_URL = 'http://localhost:5000/calculate';
+    const [activeBackend, setActiveBackend] = useState('go'); // 'py' or 'go'
+    const API_URL_PY = 'http://localhost:5000/calculate';
+    const API_URL_GO = 'http://localhost:5001/calculate';
 
     const appendSymbol = (e) => {
         setExpression((prevState) => {
@@ -14,16 +16,22 @@ const AbacusSwitch = () => {
         });
     };
 
+    async function queryServer(API_URL) {
+        return await fetch(API_URL, {
+            method : 'POST',
+            headers : {
+                'Content-Type' : 'application/json'
+            },
+            body : JSON.stringify({expression : expression}),
+        });
+    }
+
     const evaluate = async () => {
         try {
-            const response = await fetch(API_URL, {
-                method : 'POST',
-                headers : {
-                    'Content-Type' : 'application/json'
-                },
-                body : JSON.stringify({expression : expression}),
-            });
-
+            const API_URL = activeBackend === 'go'
+                ? API_URL_GO
+                : API_URL_PY;
+            const response = await queryServer(API_URL);
             if (!response.ok) throw new Error('Something went wrong.');
 
             const data = await response.json();
@@ -33,6 +41,7 @@ const AbacusSwitch = () => {
                 });
                 return displayExpression;
             });
+            setActiveBackend(prev => prev === 'go' ? 'py' : 'go');
         } catch (error) {
             setDisplayExpression(() => {
                 setExpression(() => "");
@@ -64,41 +73,47 @@ const AbacusSwitch = () => {
     }
 
     return (
-        <div className={styles.calculator}>
-            <input id="expression" value={displayExpression} type="text" className={styles.screen} disabled/>
-            <div className={styles['buttons']}>
-                <button onClick={clearScreenHandler} className={styles["clear"]}>C</button>
-                <button value={"("} onClick={appendSymbol} className={styles["operator"]}>(</button>
-                <button value={")"} onClick={appendSymbol} className={styles["operator"]}>)</button>
-                <button value={"%"} onClick={appendSymbol} className={styles["operator"]}>mod</button>
-                <button value={"!"} onClick={appendSymbol} className={styles["operator"]}>!</button>
 
-                <button value={"7"} onClick={appendSymbol}>7</button>
-                <button value={"8"} onClick={appendSymbol}>8</button>
-                <button value={"9"} onClick={appendSymbol}>9</button>
-                <button value={"√"} onClick={appendSymbol} className={styles["operator"]}>√</button>
-                <button value={"^"} onClick={appendSymbol} className={styles["operator"]}>^</button>
-
-
-                <button value={"4"} onClick={appendSymbol}>4</button>
-                <button value={"5"} onClick={appendSymbol}>5</button>
-                <button value={"6"} onClick={appendSymbol}>6</button>
-                <button value={"÷"} onClick={appendSymbol} className={styles["operator"]}>÷</button>
-                <button value={"x"} onClick={appendSymbol} className={styles["operator"]}>x</button>
-
-                <button value={"1"} onClick={appendSymbol}>1</button>
-                <button value={"2"} onClick={appendSymbol}>2</button>
-                <button value={"3"} onClick={appendSymbol}>3</button>
-                <button value={"-"} onClick={appendSymbol} className={styles["operator"]}>-</button>
-                <button onClick={evaluationHandler} className={styles["equals"]}>=</button>
-
-                <button value={"0"} onClick={appendSymbol}>0</button>
-                <button value={"."} onClick={appendSymbol}>.</button>
-                <button onClick={backspaceHandler} className={styles["backspace"]}>⌫</button>
-                <button value={"+"} onClick={appendSymbol} className={styles["operator"]}>+</button>
+        <>
+            <div>
+                <h1 className={styles.title}>Abacus-Switch Calculator</h1>
             </div>
+            <div className={styles.calculator}>
+                <input id="expression" value={displayExpression} type="text" className={styles.screen} disabled/>
+                <div className={styles['buttons']}>
+                    <button onClick={clearScreenHandler} className={styles["clear"]}>C</button>
+                    <button value={"("} onClick={appendSymbol} className={styles["operator"]}>(</button>
+                    <button value={")"} onClick={appendSymbol} className={styles["operator"]}>)</button>
+                    <button value={"%"} onClick={appendSymbol} className={styles["operator"]}>mod</button>
+                    <button value={"!"} onClick={appendSymbol} className={styles["operator"]}>!</button>
 
-        </div>
+                    <button value={"7"} onClick={appendSymbol}>7</button>
+                    <button value={"8"} onClick={appendSymbol}>8</button>
+                    <button value={"9"} onClick={appendSymbol}>9</button>
+                    <button value={"√"} onClick={appendSymbol} className={styles["operator"]}>√</button>
+                    <button value={"^"} onClick={appendSymbol} className={styles["operator"]}>^</button>
+
+
+                    <button value={"4"} onClick={appendSymbol}>4</button>
+                    <button value={"5"} onClick={appendSymbol}>5</button>
+                    <button value={"6"} onClick={appendSymbol}>6</button>
+                    <button value={"÷"} onClick={appendSymbol} className={styles["operator"]}>÷</button>
+                    <button value={"x"} onClick={appendSymbol} className={styles["operator"]}>x</button>
+
+                    <button value={"1"} onClick={appendSymbol}>1</button>
+                    <button value={"2"} onClick={appendSymbol}>2</button>
+                    <button value={"3"} onClick={appendSymbol}>3</button>
+                    <button value={"-"} onClick={appendSymbol} className={styles["operator"]}>-</button>
+                    <button onClick={evaluationHandler} className={styles["equals"]}>=</button>
+
+                    <button value={"0"} onClick={appendSymbol}>0</button>
+                    <button value={"."} onClick={appendSymbol}>.</button>
+                    <button onClick={backspaceHandler} className={styles["backspace"]}>⌫</button>
+                    <button value={"+"} onClick={appendSymbol} className={styles["operator"]}>+</button>
+                </div>
+
+            </div>
+        </>
     )
 }
 
