@@ -32,6 +32,7 @@ const AbacusSwitch = () => {
             const API_URL = activeBackend === 'go'
                 ? API_URL_GO
                 : API_URL_PY;
+            console.log("API_URL: " + API_URL);
             const response = await queryServer(API_URL);
             if (!response.ok) throw new Error('Something went wrong.');
 
