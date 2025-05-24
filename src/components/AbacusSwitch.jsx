@@ -27,6 +27,7 @@ const AbacusSwitch = () => {
     }
 
     const evaluate = async () => {
+        console.log('evaluate');
         try {
             const API_URL = activeBackend === 'go'
                 ? API_URL_GO
@@ -41,8 +42,9 @@ const AbacusSwitch = () => {
                 });
                 return displayExpression;
             });
-            setActiveBackend(prev => prev === 'go' ? 'py' : 'go');
         } catch (error) {
+            console.error(activeBackend);
+            setActiveBackend(prev => prev === 'go' ? 'py' : 'go');
             setDisplayExpression(() => {
                 setExpression(() => "");
                 return error;
