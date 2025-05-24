@@ -5,8 +5,8 @@ const AbacusSwitch = () => {
     const [expression, setExpression] = useState("")
     const [displayExpression, setDisplayExpression] = useState('0')
     const [activeBackend, setActiveBackend] = useState('go'); // 'py' or 'go'
-    const API_URL_PY = 'http://localhost:5000/calculate';
-    const API_URL_GO = 'http://localhost:5001/calculate';
+    const API_URL_PY = import.meta.env.VITE_API_URL_PY;
+    const API_URL_GO = import.meta.env.VITE_API_URL_GO;
 
     const appendSymbol = (e) => {
         setExpression((prevState) => {
